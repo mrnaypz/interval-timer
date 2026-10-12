@@ -1,15 +1,17 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Modal, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "../../components/AppText";
 import { BlackButton } from "../../components/BlackButton";
+import { playChime, prepareChimes, stopChimes } from "../../chimes";
 import { usePresets } from "../../presets";
 import { colors } from "../../theme";
 import {
   buildPhases,
+  countdownChimes,
   displaySeconds,
   formatClock,
   formatTotal,
@@ -30,6 +32,16 @@ export default function RunScreen() {
   const [now, setNow] = useState(() => Date.now());
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
+  const chimeEvents = useMemo(() => countdownChimes(phases), [phases]);
+  const playedChimes = useRef(new Set<number>());
+
+  useEffect(() => {
+    void prepareChimes();
+    return () => {
+      stopChimes();
+    };
+  }, []);
+
   useEffect(() => {
     if (startedAt === null) {
       return;
@@ -37,6 +49,30 @@ export default function RunScreen() {
     const timer = setInterval(() => setNow(Date.now()), 100);
     return () => clearInterval(timer);
   }, [startedAt]);
+
+  useEffect(() => {
+    playedChimes.current = new Set();
+  }, [startedAt]);
+
+  useEffect(() => {
+    if (startedAt === null) {
+      return;
+    }
+    const elapsed = now - startedAt;
+    for (const event of chimeEvents) {
+      if (playedChimes.current.has(event.atMs)) {
+        continue;
+      }
+      const late = elapsed - event.atMs;
+      if (late < 0) {
+        continue;
+      }
+      playedChimes.current.add(event.atMs);
+      if (late < 700) {
+        void playChime(event.tone);
+      }
+    }
+  }, [chimeEvents, now, startedAt]);
 
   if (!ready) {
     return <SafeAreaView style={styles.screen} />;

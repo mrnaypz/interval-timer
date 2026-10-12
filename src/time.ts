@@ -124,6 +124,45 @@ export function displaySeconds(remainingMs: number): number {
   return Math.ceil(remainingMs / 1000);
 }
 
+export type ChimeTone = "low" | "high";
+
+export type ChimeEvent = {
+  atMs: number;
+  tone: ChimeTone;
+};
+
+const CHIME_BEFORE_END_MS = [4000, 3000, 2000, 1000];
+const FINAL_CHIME_REPEAT_GAP_MS = 500;
+
+/**
+ * One chime on each of the last four seconds of every phase.
+ * The chime at one second remaining is the higher one.
+ * The last phase repeats that higher chime twice more, half a second apart,
+ * so the workout ends on the third high chime.
+ */
+export function countdownChimes(phases: Phase[]): ChimeEvent[] {
+  const events: ChimeEvent[] = [];
+  let start = 0;
+  phases.forEach((phase, index) => {
+    const end = start + phase.durationMs;
+    CHIME_BEFORE_END_MS.forEach((beforeEnd, chimeIndex) => {
+      const atMs = end - beforeEnd;
+      if (atMs < start) {
+        return;
+      }
+      const isFinalChime = chimeIndex === CHIME_BEFORE_END_MS.length - 1;
+      events.push({ atMs, tone: isFinalChime ? "high" : "low" });
+    });
+    const finalAt = end - 1000;
+    if (index === phases.length - 1 && finalAt >= start) {
+      events.push({ atMs: finalAt + FINAL_CHIME_REPEAT_GAP_MS, tone: "high" });
+      events.push({ atMs: finalAt + FINAL_CHIME_REPEAT_GAP_MS * 2, tone: "high" });
+    }
+    start = end;
+  });
+  return events;
+}
+
 export function phaseLabel(kind: PhaseKind | "done"): string {
   switch (kind) {
     case "countdown":

@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 
 import {
   buildPhases,
+  countdownChimes,
   displaySeconds,
   formatEditorTime,
   formatSets,
@@ -64,6 +65,40 @@ describe("workout phases", () => {
     assert.equal(displaySeconds(phaseAt(phases, 5000).remainingMs), 45);
     assert.equal(phaseAt(phases, 5000 + 45000).kind, "rest");
     assert.equal(phaseAt(phases, 5000 + 45000 + 15000 + 45000 + 15000).kind, "done");
+  });
+
+  it("chimes on the last four seconds, and ends the workout with two extra high chimes", () => {
+    const phases = buildPhases(1, 5, 5);
+    assert.deepEqual(countdownChimes(phases), [
+      { atMs: 1000, tone: "low" },
+      { atMs: 2000, tone: "low" },
+      { atMs: 3000, tone: "low" },
+      { atMs: 4000, tone: "high" },
+      { atMs: 6000, tone: "low" },
+      { atMs: 7000, tone: "low" },
+      { atMs: 8000, tone: "low" },
+      { atMs: 9000, tone: "high" },
+      { atMs: 11000, tone: "low" },
+      { atMs: 12000, tone: "low" },
+      { atMs: 13000, tone: "low" },
+      { atMs: 14000, tone: "high" },
+      { atMs: 14500, tone: "high" },
+      { atMs: 15000, tone: "high" },
+    ]);
+  });
+
+  it("skips chimes that would fall before a short phase starts", () => {
+    const phases = buildPhases(1, 2, 0);
+    assert.deepEqual(countdownChimes(phases), [
+      { atMs: 1000, tone: "low" },
+      { atMs: 2000, tone: "low" },
+      { atMs: 3000, tone: "low" },
+      { atMs: 4000, tone: "high" },
+      { atMs: 5000, tone: "low" },
+      { atMs: 6000, tone: "high" },
+      { atMs: 6500, tone: "high" },
+      { atMs: 7000, tone: "high" },
+    ]);
   });
 
   it("skips a zero-length work or rest phase", () => {
