@@ -18,7 +18,7 @@ export default function HomeScreen() {
       </View>
       <View style={styles.rule} />
       <AppText style={styles.heading}>PRESETS</AppText>
-      <ScrollView contentContainerStyle={styles.list}>
+      <ScrollView style={styles.listView} contentContainerStyle={styles.list}>
         {ready && presets.length === 0 ? <AppText style={styles.empty}>No presets yet.</AppText> : null}
         {presets.map((preset) => {
           const label = presetLabel(preset.sets, preset.workSec, preset.restSec);
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   top: {
     paddingHorizontal: 20,
-    paddingTop: 12,
+    paddingTop: 36,
   },
   rule: {
     backgroundColor: colors.black,
@@ -66,6 +66,9 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginTop: 16,
     textAlign: "center",
+  },
+  listView: {
+    flex: 1,
   },
   list: {
     gap: 12,

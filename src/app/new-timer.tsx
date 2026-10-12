@@ -86,7 +86,11 @@ export default function NewTimerScreen() {
 
   return (
     <SafeAreaView style={styles.screen} edges={["top", "bottom"]}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
         <Stepper
           label="SETS"
           value={formatSets(sets)}
@@ -141,12 +145,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     flex: 1,
   },
+  scroll: {
+    flex: 1,
+  },
   content: {
     flexGrow: 1,
     gap: 28,
     paddingBottom: 32,
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 44,
   },
   totalBlock: {
     alignItems: "center",

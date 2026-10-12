@@ -31,10 +31,15 @@ export default function RunScreen() {
 
   if (!preset) {
     return (
-      <SafeAreaView style={styles.screen}>
-        <View style={styles.missing}>
-          <AppText style={styles.phase}>MISSING</AppText>
-          <BlackButton label="MENU" onPress={() => router.replace("/")} />
+      <SafeAreaView style={styles.screen} edges={["top", "bottom"]}>
+        <View style={styles.stage}>
+          <View style={styles.balance} />
+          <View style={styles.timerBlock}>
+            <AppText style={styles.phase}>MISSING</AppText>
+          </View>
+          <View style={styles.footer}>
+            <BlackButton label="MENU" onPress={() => router.replace("/")} />
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -45,16 +50,19 @@ export default function RunScreen() {
 
   return (
     <SafeAreaView style={styles.screen} edges={["top", "bottom"]}>
-      <View style={styles.timerBlock}>
-        <AppText style={styles.phase}>{phaseLabel(phase.kind)}</AppText>
-        <AppText style={styles.clock}>{clock}</AppText>
-      </View>
-      <View style={styles.footer}>
-        {phase.kind === "done" ? (
-          <BlackButton label="MENU" onPress={() => router.replace("/")} />
-        ) : (
-          <BlackButton label="EXIT" onPress={() => router.back()} />
-        )}
+      <View style={styles.stage}>
+        <View style={styles.balance} />
+        <View style={styles.timerBlock}>
+          <AppText style={styles.phase}>{phaseLabel(phase.kind)}</AppText>
+          <AppText style={styles.clock}>{clock}</AppText>
+        </View>
+        <View style={styles.footer}>
+          {phase.kind === "done" ? (
+            <BlackButton label="MENU" onPress={() => router.replace("/")} />
+          ) : (
+            <BlackButton label="EXIT" onPress={() => router.back()} />
+          )}
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -65,25 +73,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     flex: 1,
   },
+  stage: {
+    flex: 1,
+  },
+  balance: {
+    flex: 1,
+  },
   timerBlock: {
     alignItems: "center",
-    paddingTop: 72,
+    justifyContent: "center",
   },
   phase: {
     fontSize: 28,
+    textAlign: "center",
   },
   clock: {
     fontSize: 84,
     marginTop: 12,
+    textAlign: "center",
   },
   footer: {
-    marginTop: "auto",
-    paddingBottom: 12,
+    flex: 1,
     paddingHorizontal: 20,
-  },
-  missing: {
-    gap: 24,
-    padding: 20,
-    paddingTop: 72,
+    paddingTop: 48,
   },
 });

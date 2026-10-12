@@ -36,6 +36,7 @@ export function EntryModal({
             autoFocus
             keyboardType={keyboard}
             maxLength={keyboard === "number-pad" ? 2 : 5}
+            allowFontScaling={false}
             selectionColor={colors.black}
             style={styles.input}
             value={value}
