@@ -164,11 +164,10 @@ export default function RunScreen() {
     <SafeAreaView style={[styles.screen, inverted && styles.inverted]} edges={["top", "bottom"]}>
       <StatusBar style={inverted ? "light" : "dark"} />
       <View style={styles.stage}>
-        <View style={styles.balance} />
-        <View style={styles.timerBlock}>
+        <View style={styles.phaseSlot}>
           <AppText style={[styles.phase, { color: ink }]}>{phaseLabel(phase.kind)}</AppText>
-          <AppText style={[styles.clock, { color: ink }]}>{formatClock(displaySeconds(phase.remainingMs))}</AppText>
         </View>
+        <AppText style={[styles.clock, { color: ink }]}>{formatClock(displaySeconds(phase.remainingMs))}</AppText>
         <View style={styles.footer}>
           {phase.kind === "done" ? (
             <BlackButton label="MENU" onPress={() => router.replace("/")} />
@@ -292,13 +291,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  phaseSlot: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "flex-end",
+    paddingBottom: 40,
+  },
   phase: {
-    fontSize: 28,
+    fontSize: 42,
     textAlign: "center",
   },
   clock: {
-    fontSize: 84,
-    marginTop: 12,
+    fontSize: 112,
     textAlign: "center",
   },
   footer: {
