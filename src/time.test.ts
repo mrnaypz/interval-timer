@@ -29,7 +29,8 @@ describe("time formatting", () => {
     assert.equal(formatTotal(885), "14:45");
     assert.equal(presetLabel(15, 45, 15), "45/15 - 14:45");
     assert.equal(workoutSeconds(1, 45, 15), 45);
-    assert.equal(formatTotal(60), "1:00");
+    assert.equal(formatTotal(405), "06:45");
+    assert.equal(formatTotal(60), "01:00");
     assert.equal(formatTotal(3661), "1:01:01");
   });
 

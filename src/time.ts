@@ -22,14 +22,15 @@ export function formatEditorTime(totalSec: number): string {
   return `${String(minutes).padStart(2, "0")}.${String(seconds).padStart(2, "0")}`;
 }
 
-/** Workout length: 15:00, or 1:05:00 once it passes an hour. */
+/** Workout length: 06:45, or 1:05:00 once it passes an hour. */
 export function formatTotal(totalSec: number): string {
   const safe = Math.max(0, totalSec);
   const hours = Math.floor(safe / 3600);
   const minutes = Math.floor((safe % 3600) / 60);
   const seconds = safe % 60;
-  const clock = `${minutes}:${String(seconds).padStart(2, "0")}`;
-  return hours > 0 ? `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}` : clock;
+  const mm = String(minutes).padStart(2, "0");
+  const ss = String(seconds).padStart(2, "0");
+  return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
 }
 
 export function formatClock(totalSec: number): string {
