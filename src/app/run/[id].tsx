@@ -227,22 +227,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   summary: {
-    gap: 6,
+    gap: 10,
   },
   summaryLine: {
     alignItems: "center",
     flexDirection: "row",
   },
   summaryLabel: {
-    fontSize: 22,
-    width: 78,
+    fontSize: 34,
+    width: 128,
   },
   summaryDash: {
-    fontSize: 22,
-    marginHorizontal: 8,
+    fontSize: 34,
+    marginHorizontal: 12,
   },
   summaryValue: {
-    fontSize: 22,
+    fontSize: 34,
   },
   centerAction: {
     paddingHorizontal: 20,
