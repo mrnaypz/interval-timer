@@ -183,9 +183,7 @@ function SummaryLine({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.summaryLine}>
       <AppText style={styles.summaryLabel}>{label}</AppText>
-      <View style={styles.summaryGap} />
       <AppText style={styles.summaryDash}>-</AppText>
-      <View style={styles.summaryGap} />
       <AppText style={styles.summaryValue}>{value}</AppText>
     </View>
   );
@@ -235,24 +233,25 @@ const styles = StyleSheet.create({
   summary: {
     alignSelf: "stretch",
     gap: 10,
-    paddingHorizontal: 32,
   },
   summaryLine: {
     alignItems: "center",
     flexDirection: "row",
   },
-  summaryGap: {
-    flex: 1,
-  },
   summaryLabel: {
+    flex: 1,
     fontSize: 34,
+    paddingRight: 16,
+    textAlign: "right",
   },
   summaryDash: {
     fontSize: 34,
     textAlign: "center",
   },
   summaryValue: {
+    flex: 1,
     fontSize: 34,
+    paddingLeft: 16,
   },
   centerAction: {
     paddingHorizontal: 20,
