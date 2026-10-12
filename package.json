@@ -29,7 +29,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "node --experimental-strip-types --test src/time.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "postinstall": "patch -p1 -N --forward -d node_modules/expo-audio -i ../../patches/expo-audio-alarm-stream.patch || true"
   },
   "private": true
 }

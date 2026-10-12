@@ -1,0 +1,16 @@
+--- a/android/src/main/java/expo/modules/audio/AudioPlayer.kt
++++ b/android/src/main/java/expo/modules/audio/AudioPlayer.kt
+@@ -36,7 +36,12 @@ class AudioPlayer(
+   player = ExoPlayer.Builder(context)
+     .setLooper(context.mainLooper)
+-    .setAudioAttributes(AudioAttributes.DEFAULT, false)
++    .setAudioAttributes(
++      AudioAttributes.Builder()
++        .setUsage(C.USAGE_ALARM)
++        .setContentType(C.AUDIO_CONTENT_TYPE_SONIFICATION)
++        .build(),
++      false
++    )
+     .setSeekForwardIncrementMs(SEEK_JUMP_INTERVAL_MS)
+     .setSeekBackIncrementMs(SEEK_JUMP_INTERVAL_MS)
+     .apply {
