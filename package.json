@@ -32,5 +32,12 @@
     "typecheck": "tsc --noEmit",
     "postinstall": "patch -p1 -N --forward -d node_modules/expo-audio -i ../../patches/expo-audio-alarm-stream.patch || true"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "autolinking": {
+      "android": {
+        "buildFromSource": ["expo-audio"]
+      }
+    }
+  }
 }
