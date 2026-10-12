@@ -176,8 +176,7 @@ const styles = StyleSheet.create({
   summarySlot: {
     alignItems: "center",
     flex: 1,
-    justifyContent: "flex-end",
-    paddingBottom: 28,
+    justifyContent: "center",
   },
   summary: {
     gap: 6,
