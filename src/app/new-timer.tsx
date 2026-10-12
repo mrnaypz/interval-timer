@@ -113,7 +113,10 @@ export default function NewTimerScreen() {
           <AppText style={styles.total}>{total}</AppText>
         </View>
         {saveError ? <AppText style={styles.error}>{saveError}</AppText> : null}
-        <BlackButton label="SAVE" onPress={() => void onSave()} />
+        <View style={styles.actions}>
+          <BlackButton label="SAVE" onPress={() => void onSave()} />
+          <BlackButton label="BACK" onPress={() => router.back()} />
+        </View>
       </ScrollView>
       <EntryModal
         error={entryError}
@@ -139,19 +142,28 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    flexGrow: 1,
     gap: 28,
     paddingBottom: 32,
     paddingHorizontal: 20,
     paddingTop: 20,
   },
   totalBlock: {
+    alignItems: "center",
+    flexGrow: 1,
     gap: 4,
+    justifyContent: "center",
   },
   totalLabel: {
     fontSize: 22,
+    textAlign: "center",
   },
   total: {
     fontSize: 40,
+    textAlign: "center",
+  },
+  actions: {
+    gap: 12,
   },
   error: {
     fontSize: 16,

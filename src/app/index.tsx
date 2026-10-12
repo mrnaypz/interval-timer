@@ -17,9 +17,7 @@ export default function HomeScreen() {
         <BlackButton label="NEW TIMER" onPress={() => router.push("/new-timer")} />
       </View>
       <View style={styles.rule} />
-      <View style={styles.headingBar}>
-        <AppText style={styles.heading}>PRESETS</AppText>
-      </View>
+      <AppText style={styles.heading}>PRESETS</AppText>
       <ScrollView contentContainerStyle={styles.list}>
         {ready && presets.length === 0 ? <AppText style={styles.empty}>No presets yet.</AppText> : null}
         {presets.map((preset) => {
@@ -63,15 +61,11 @@ const styles = StyleSheet.create({
     height: 1,
     marginTop: 20,
   },
-  headingBar: {
-    backgroundColor: colors.black,
-    marginTop: 16,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
   heading: {
-    color: colors.white,
+    color: colors.black,
     fontSize: 22,
+    marginTop: 16,
+    textAlign: "center",
   },
   list: {
     gap: 12,
