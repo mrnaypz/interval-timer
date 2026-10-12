@@ -164,10 +164,12 @@ export default function RunScreen() {
     <SafeAreaView style={[styles.screen, inverted && styles.inverted]} edges={["top", "bottom"]}>
       <StatusBar style={inverted ? "light" : "dark"} />
       <View style={styles.stage}>
-        <View style={styles.phaseSlot}>
-          <AppText style={[styles.phase, { color: ink }]}>{phaseLabel(phase.kind)}</AppText>
+        <View style={styles.timerArea}>
+          <View style={styles.timerGroup}>
+            <AppText style={[styles.phase, { color: ink }]}>{phaseLabel(phase.kind)}</AppText>
+            <AppText style={[styles.clock, { color: ink }]}>{formatClock(displaySeconds(phase.remainingMs))}</AppText>
+          </View>
         </View>
-        <AppText style={[styles.clock, { color: ink }]}>{formatClock(displaySeconds(phase.remainingMs))}</AppText>
         <View style={styles.footer}>
           {phase.kind === "done" ? (
             <BlackButton label="MENU" onPress={() => router.replace("/")} />
@@ -291,11 +293,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  phaseSlot: {
+  timerArea: {
     alignItems: "center",
-    flex: 1,
-    justifyContent: "flex-end",
-    paddingBottom: 40,
+    bottom: 0,
+    justifyContent: "center",
+    left: 0,
+    position: "absolute",
+    right: 0,
+    top: 0,
+  },
+  timerGroup: {
+    alignItems: "center",
+    gap: 36,
+    transform: [{ translateY: -56 }],
   },
   phase: {
     fontSize: 42,
