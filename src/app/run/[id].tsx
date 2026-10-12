@@ -8,7 +8,15 @@ import { AppText } from "../../components/AppText";
 import { BlackButton } from "../../components/BlackButton";
 import { usePresets } from "../../presets";
 import { colors } from "../../theme";
-import { buildPhases, displaySeconds, formatClock, phaseAt, phaseLabel } from "../../time";
+import {
+  buildPhases,
+  displaySeconds,
+  formatClock,
+  formatTotal,
+  phaseAt,
+  phaseLabel,
+  workoutSeconds,
+} from "../../time";
 
 export default function RunScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -54,7 +62,16 @@ export default function RunScreen() {
     return (
       <SafeAreaView style={styles.screen} edges={["top", "bottom"]}>
         <View style={styles.stage}>
-          <View style={styles.balance} />
+          <View style={styles.summarySlot}>
+            <View style={styles.summary}>
+              <SummaryLine label="WORK" value={formatClock(preset.workSec)} />
+              <SummaryLine label="REST" value={formatClock(preset.restSec)} />
+              <SummaryLine
+                label="TOTAL"
+                value={formatTotal(workoutSeconds(preset.sets, preset.workSec, preset.restSec))}
+              />
+            </View>
+          </View>
           <View style={styles.centerAction}>
             <BlackButton
               label="START"
@@ -110,6 +127,16 @@ export default function RunScreen() {
   );
 }
 
+function SummaryLine({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.summaryLine}>
+      <AppText style={styles.summaryLabel}>{label}</AppText>
+      <AppText style={styles.summaryDash}>-</AppText>
+      <AppText style={styles.summaryValue}>{value}</AppText>
+    </View>
+  );
+}
+
 function DeleteConfirm({
   visible,
   onYes,
@@ -145,6 +172,30 @@ const styles = StyleSheet.create({
   },
   balance: {
     flex: 1,
+  },
+  summarySlot: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "flex-end",
+    paddingBottom: 28,
+  },
+  summary: {
+    gap: 6,
+  },
+  summaryLine: {
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  summaryLabel: {
+    fontSize: 22,
+    width: 78,
+  },
+  summaryDash: {
+    fontSize: 22,
+    marginHorizontal: 8,
+  },
+  summaryValue: {
+    fontSize: 22,
   },
   centerAction: {
     paddingHorizontal: 20,
