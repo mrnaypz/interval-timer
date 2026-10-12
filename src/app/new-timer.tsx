@@ -1,5 +1,5 @@
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -24,7 +24,9 @@ import {
 type Field = "sets" | "work" | "rest";
 
 export default function NewTimerScreen() {
-  const { savePreset } = usePresets();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const presetId = Array.isArray(id) ? id[0] : id;
+  const { presets, ready, savePreset, updatePreset } = usePresets();
   const [sets, setSets] = useState(0);
   const [workSec, setWorkSec] = useState(0);
   const [restSec, setRestSec] = useState(0);
@@ -32,6 +34,25 @@ export default function NewTimerScreen() {
   const [draft, setDraft] = useState("");
   const [entryError, setEntryError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const hydrated = useRef(false);
+
+  useEffect(() => {
+    if (hydrated.current || !ready) {
+      return;
+    }
+    if (!presetId) {
+      hydrated.current = true;
+      return;
+    }
+    const existing = presets.find((preset) => preset.id === presetId);
+    if (!existing) {
+      return;
+    }
+    setSets(existing.sets);
+    setWorkSec(existing.workSec);
+    setRestSec(existing.restSec);
+    hydrated.current = true;
+  }, [presetId, presets, ready]);
 
   const total = formatTotal(workoutSeconds(sets, workSec, restSec));
 
@@ -80,8 +101,16 @@ export default function NewTimerScreen() {
       return;
     }
     setSaveError(null);
-    await savePreset({ sets, workSec, restSec });
+    if (presetId) {
+      await updatePreset(presetId, { sets, workSec, restSec });
+    } else {
+      await savePreset({ sets, workSec, restSec });
+    }
     router.replace("/");
+  }
+
+  if (presetId && !hydrated.current) {
+    return <SafeAreaView style={styles.screen} />;
   }
 
   return (

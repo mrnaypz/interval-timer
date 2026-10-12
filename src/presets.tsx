@@ -14,6 +14,7 @@ type PresetContextValue = {
   presets: Preset[];
   ready: boolean;
   savePreset: (preset: Omit<Preset, "id">) => Promise<Preset>;
+  updatePreset: (id: string, preset: Omit<Preset, "id">) => Promise<void>;
   removePreset: (id: string) => Promise<void>;
 };
 
@@ -79,6 +80,13 @@ export function PresetProvider({ children }: { children: ReactNode }) {
     [persist, presets],
   );
 
+  const updatePreset = useCallback(
+    async (id: string, preset: Omit<Preset, "id">) => {
+      await persist(presets.map((item) => (item.id === id ? { ...item, ...preset } : item)));
+    },
+    [persist, presets],
+  );
+
   const removePreset = useCallback(
     async (id: string) => {
       await persist(presets.filter((preset) => preset.id !== id));
@@ -87,8 +95,8 @@ export function PresetProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo(
-    () => ({ presets, ready, savePreset, removePreset }),
-    [presets, ready, savePreset, removePreset],
+    () => ({ presets, ready, savePreset, updatePreset, removePreset }),
+    [presets, ready, savePreset, updatePreset, removePreset],
   );
 
   return <PresetContext.Provider value={value}>{children}</PresetContext.Provider>;

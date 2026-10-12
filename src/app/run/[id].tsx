@@ -132,6 +132,10 @@ export default function RunScreen() {
           </View>
           <View style={styles.bottomActions}>
             <BlackButton label="BACK" onPress={() => router.replace("/")} />
+            <BlackButton
+              label="EDIT"
+              onPress={() => router.push({ pathname: "/new-timer", params: { id: preset.id } })}
+            />
             <BlackButton label="DELETE" onPress={() => setConfirmingDelete(true)} />
           </View>
         </View>
@@ -179,7 +183,9 @@ function SummaryLine({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.summaryLine}>
       <AppText style={styles.summaryLabel}>{label}</AppText>
+      <View style={styles.summaryGap} />
       <AppText style={styles.summaryDash}>-</AppText>
+      <View style={styles.summaryGap} />
       <AppText style={styles.summaryValue}>{value}</AppText>
     </View>
   );
@@ -227,19 +233,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   summary: {
+    alignSelf: "stretch",
     gap: 10,
+    paddingHorizontal: 32,
   },
   summaryLine: {
     alignItems: "center",
     flexDirection: "row",
   },
+  summaryGap: {
+    flex: 1,
+  },
   summaryLabel: {
     fontSize: 34,
-    width: 140,
   },
   summaryDash: {
     fontSize: 34,
-    marginHorizontal: 12,
+    textAlign: "center",
   },
   summaryValue: {
     fontSize: 34,
