@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Modal, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "../../components/AppText";
@@ -11,19 +12,23 @@ import { buildPhases, displaySeconds, formatClock, phaseAt, phaseLabel } from ".
 
 export default function RunScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { presets, ready } = usePresets();
+  const { presets, ready, removePreset } = usePresets();
   const preset = presets.find((item) => item.id === id);
   const phases = useMemo(
     () => (preset ? buildPhases(preset.sets, preset.workSec, preset.restSec) : []),
     [preset],
   );
-  const [startedAt] = useState(() => Date.now());
-  const [now, setNow] = useState(startedAt);
+  const [startedAt, setStartedAt] = useState<number | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   useEffect(() => {
+    if (startedAt === null) {
+      return;
+    }
     const timer = setInterval(() => setNow(Date.now()), 100);
     return () => clearInterval(timer);
-  }, []);
+  }, [startedAt]);
 
   if (!ready) {
     return <SafeAreaView style={styles.screen} />;
@@ -45,26 +50,85 @@ export default function RunScreen() {
     );
   }
 
+  if (startedAt === null) {
+    return (
+      <SafeAreaView style={styles.screen} edges={["top", "bottom"]}>
+        <View style={styles.stage}>
+          <View style={styles.balance} />
+          <View style={styles.centerAction}>
+            <BlackButton
+              label="START"
+              onPress={() => {
+                const at = Date.now();
+                setStartedAt(at);
+                setNow(at);
+              }}
+            />
+          </View>
+          <View style={styles.bottomActions}>
+            <BlackButton label="BACK" onPress={() => router.replace("/")} />
+            <BlackButton label="DELETE" onPress={() => setConfirmingDelete(true)} />
+          </View>
+        </View>
+        <DeleteConfirm
+          visible={confirmingDelete}
+          onNo={() => setConfirmingDelete(false)}
+          onYes={() => {
+            void removePreset(preset.id).then(() => router.replace("/"));
+          }}
+        />
+      </SafeAreaView>
+    );
+  }
+
   const phase = phaseAt(phases, now - startedAt);
-  const clock = formatClock(displaySeconds(phase.remainingMs));
+  const inverted = phase.kind === "countdown" || phase.kind === "rest";
+  const ink = inverted ? colors.white : colors.black;
 
   return (
-    <SafeAreaView style={styles.screen} edges={["top", "bottom"]}>
+    <SafeAreaView style={[styles.screen, inverted && styles.inverted]} edges={["top", "bottom"]}>
+      <StatusBar style={inverted ? "light" : "dark"} />
       <View style={styles.stage}>
         <View style={styles.balance} />
         <View style={styles.timerBlock}>
-          <AppText style={styles.phase}>{phaseLabel(phase.kind)}</AppText>
-          <AppText style={styles.clock}>{clock}</AppText>
+          <AppText style={[styles.phase, { color: ink }]}>{phaseLabel(phase.kind)}</AppText>
+          <AppText style={[styles.clock, { color: ink }]}>{formatClock(displaySeconds(phase.remainingMs))}</AppText>
         </View>
         <View style={styles.footer}>
           {phase.kind === "done" ? (
             <BlackButton label="MENU" onPress={() => router.replace("/")} />
           ) : (
-            <BlackButton label="EXIT" onPress={() => router.back()} />
+            <BlackButton
+              label="EXIT"
+              tone={inverted ? "white" : "black"}
+              onPress={() => router.back()}
+            />
           )}
         </View>
       </View>
     </SafeAreaView>
+  );
+}
+
+function DeleteConfirm({
+  visible,
+  onYes,
+  onNo,
+}: {
+  visible: boolean;
+  onYes: () => void;
+  onNo: () => void;
+}) {
+  return (
+    <Modal animationType="fade" transparent visible={visible} onRequestClose={onNo}>
+      <Pressable accessibilityLabel="Close" style={styles.backdrop} onPress={onNo}>
+        <Pressable style={styles.card} onPress={() => undefined}>
+          <AppText style={styles.confirmTitle}>Delete this preset?</AppText>
+          <BlackButton label="YES" onPress={onYes} />
+          <BlackButton label="NO" onPress={onNo} />
+        </Pressable>
+      </Pressable>
+    </Modal>
   );
 }
 
@@ -73,11 +137,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     flex: 1,
   },
+  inverted: {
+    backgroundColor: colors.black,
+  },
   stage: {
     flex: 1,
   },
   balance: {
     flex: 1,
+  },
+  centerAction: {
+    paddingHorizontal: 20,
+  },
+  bottomActions: {
+    flex: 1,
+    gap: 12,
+    justifyContent: "flex-end",
+    paddingBottom: 20,
+    paddingHorizontal: 20,
   },
   timerBlock: {
     alignItems: "center",
@@ -94,7 +171,27 @@ const styles = StyleSheet.create({
   },
   footer: {
     flex: 1,
+    justifyContent: "flex-end",
+    paddingBottom: 20,
     paddingHorizontal: 20,
-    paddingTop: 48,
+  },
+  backdrop: {
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
+    flex: 1,
+    justifyContent: "center",
+    padding: 24,
+  },
+  card: {
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    gap: 12,
+    padding: 24,
+    width: "100%",
+  },
+  confirmTitle: {
+    fontSize: 22,
+    marginBottom: 4,
+    textAlign: "center",
   },
 });

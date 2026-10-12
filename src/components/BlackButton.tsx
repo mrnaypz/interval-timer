@@ -5,17 +5,19 @@ import { AppText } from "./AppText";
 
 type Props = Omit<PressableProps, "style"> & {
   label: string;
+  tone?: "black" | "white";
   style?: StyleProp<ViewStyle>;
 };
 
-export function BlackButton({ label, style, ...rest }: Props) {
+export function BlackButton({ label, tone = "black", style, ...rest }: Props) {
+  const white = tone === "white";
   return (
     <Pressable
       accessibilityRole="button"
-      style={({ pressed }) => [styles.button, pressed && styles.pressed, style]}
+      style={({ pressed }) => [styles.button, white && styles.whiteButton, pressed && styles.pressed, style]}
       {...rest}
     >
-      <AppText style={styles.label}>{label}</AppText>
+      <AppText style={[styles.label, white && styles.whiteLabel]}>{label}</AppText>
     </Pressable>
   );
 }
@@ -32,9 +34,15 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.82,
   },
+  whiteButton: {
+    backgroundColor: colors.white,
+  },
   label: {
     color: colors.white,
     fontFamily,
     fontSize: 22,
+  },
+  whiteLabel: {
+    color: colors.black,
   },
 });
