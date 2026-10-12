@@ -40,7 +40,9 @@ export function formatClock(totalSec: number): string {
 }
 
 export function workoutSeconds(sets: number, workSec: number, restSec: number): number {
-  return sets * (workSec + restSec);
+  const safeSets = Math.max(0, sets);
+  const rests = restSec > 0 ? Math.max(0, safeSets - 1) : 0;
+  return safeSets * workSec + rests * restSec;
 }
 
 export function presetLabel(sets: number, workSec: number, restSec: number): string {
@@ -95,7 +97,8 @@ export function buildPhases(sets: number, workSec: number, restSec: number): Pha
     if (workSec > 0) {
       phases.push({ kind: "work", durationMs: workSec * 1000 });
     }
-    if (restSec > 0) {
+    const lastSet = index === sets - 1;
+    if (!lastSet && restSec > 0) {
       phases.push({ kind: "rest", durationMs: restSec * 1000 });
     }
   }

@@ -25,10 +25,11 @@ describe("time formatting", () => {
   });
 
   it("formats the workout total the way preset buttons show it", () => {
-    assert.equal(workoutSeconds(15, 45, 15), 900);
-    assert.equal(formatTotal(900), "15:00");
-    assert.equal(presetLabel(15, 45, 15), "45/15 - 15:00");
-    assert.equal(formatTotal(30 + 30), "1:00");
+    assert.equal(workoutSeconds(15, 45, 15), 885);
+    assert.equal(formatTotal(885), "14:45");
+    assert.equal(presetLabel(15, 45, 15), "45/15 - 14:45");
+    assert.equal(workoutSeconds(1, 45, 15), 45);
+    assert.equal(formatTotal(60), "1:00");
     assert.equal(formatTotal(3661), "1:01:01");
   });
 
@@ -45,7 +46,7 @@ describe("time formatting", () => {
 });
 
 describe("workout phases", () => {
-  it("runs a fixed 5 second countdown, then work and rest for every set", () => {
+  it("runs a fixed 5 second countdown, then work and rest, and ends on the final work", () => {
     const phases = buildPhases(2, 45, 15);
     assert.deepEqual(
       phases.map((phase) => [phase.kind, phase.durationMs]),
@@ -54,7 +55,6 @@ describe("workout phases", () => {
         ["work", 45000],
         ["rest", 15000],
         ["work", 45000],
-        ["rest", 15000],
       ],
     );
 
@@ -64,7 +64,8 @@ describe("workout phases", () => {
     assert.equal(phaseAt(phases, 5000).kind, "work");
     assert.equal(displaySeconds(phaseAt(phases, 5000).remainingMs), 45);
     assert.equal(phaseAt(phases, 5000 + 45000).kind, "rest");
-    assert.equal(phaseAt(phases, 5000 + 45000 + 15000 + 45000 + 15000).kind, "done");
+    assert.equal(phaseAt(phases, 5000 + 45000 + 15000).kind, "work");
+    assert.equal(phaseAt(phases, 5000 + 45000 + 15000 + 45000).kind, "done");
   });
 
   it("chimes on the last four seconds, and ends the workout with two extra high chimes", () => {
@@ -78,12 +79,8 @@ describe("workout phases", () => {
       { atMs: 7000, tone: "low" },
       { atMs: 8000, tone: "low" },
       { atMs: 9000, tone: "high" },
-      { atMs: 11000, tone: "low" },
-      { atMs: 12000, tone: "low" },
-      { atMs: 13000, tone: "low" },
-      { atMs: 14000, tone: "high" },
-      { atMs: 14500, tone: "high" },
-      { atMs: 15000, tone: "high" },
+      { atMs: 9500, tone: "high" },
+      { atMs: 10000, tone: "high" },
     ]);
   });
 
@@ -108,6 +105,10 @@ describe("workout phases", () => {
     );
     assert.deepEqual(
       buildPhases(1, 0, 30).map((phase) => phase.kind),
+      ["countdown"],
+    );
+    assert.deepEqual(
+      buildPhases(2, 0, 30).map((phase) => phase.kind),
       ["countdown", "rest"],
     );
   });
