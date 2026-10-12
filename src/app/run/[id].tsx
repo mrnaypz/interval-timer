@@ -30,12 +30,16 @@ export default function RunScreen() {
     [preset],
   );
   const [startedAt, setStartedAt] = useState<number | null>(null);
+  const [pausedAt, setPausedAt] = useState<number | null>(null);
+  const [pauseTotal, setPauseTotal] = useState(0);
   const [now, setNow] = useState(() => Date.now());
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [confirmingExit, setConfirmingExit] = useState(false);
 
   const chimeEvents = useMemo(() => countdownChimes(phases), [phases]);
   const playedChimes = useRef(new Set<number>());
-  const workoutRunning = startedAt !== null && phaseAt(phases, now - startedAt).kind !== "done";
+  const elapsedMs = startedAt === null ? 0 : (pausedAt ?? now) - startedAt - pauseTotal;
+  const workoutRunning = startedAt !== null && phaseAt(phases, elapsedMs).kind !== "done";
 
   useEffect(() => {
     if (!workoutRunning) {
@@ -55,22 +59,22 @@ export default function RunScreen() {
   }, []);
 
   useEffect(() => {
-    if (startedAt === null) {
+    if (startedAt === null || pausedAt !== null) {
       return;
     }
     const timer = setInterval(() => setNow(Date.now()), 100);
     return () => clearInterval(timer);
-  }, [startedAt]);
+  }, [pausedAt, startedAt]);
 
   useEffect(() => {
     playedChimes.current = new Set();
   }, [startedAt]);
 
   useEffect(() => {
-    if (startedAt === null) {
+    if (startedAt === null || pausedAt !== null) {
       return;
     }
-    const elapsed = now - startedAt;
+    const elapsed = now - startedAt - pauseTotal;
     for (const event of chimeEvents) {
       if (playedChimes.current.has(event.atMs)) {
         continue;
@@ -84,7 +88,7 @@ export default function RunScreen() {
         void playChime(event.tone);
       }
     }
-  }, [chimeEvents, now, startedAt]);
+  }, [chimeEvents, now, pauseTotal, pausedAt, startedAt]);
 
   if (!ready) {
     return <SafeAreaView style={styles.screen} />;
@@ -139,7 +143,8 @@ export default function RunScreen() {
             <BlackButton label="DELETE" onPress={() => setConfirmingDelete(true)} />
           </View>
         </View>
-        <DeleteConfirm
+        <ConfirmDialog
+          title="Delete this preset?"
           visible={confirmingDelete}
           onNo={() => setConfirmingDelete(false)}
           onYes={() => {
@@ -150,9 +155,10 @@ export default function RunScreen() {
     );
   }
 
-  const phase = phaseAt(phases, now - startedAt);
+  const phase = phaseAt(phases, elapsedMs);
   const inverted = phase.kind === "countdown" || phase.kind === "rest";
   const ink = inverted ? colors.white : colors.black;
+  const buttonTone = inverted ? "white" : "black";
 
   return (
     <SafeAreaView style={[styles.screen, inverted && styles.inverted]} edges={["top", "bottom"]}>
@@ -167,14 +173,31 @@ export default function RunScreen() {
           {phase.kind === "done" ? (
             <BlackButton label="MENU" onPress={() => router.replace("/")} />
           ) : (
-            <BlackButton
-              label="EXIT"
-              tone={inverted ? "white" : "black"}
-              onPress={() => router.back()}
-            />
+            <>
+              <BlackButton
+                label={pausedAt === null ? "PAUSE" : "RESUME"}
+                tone={buttonTone}
+                onPress={() => {
+                  if (pausedAt === null) {
+                    setPausedAt(Date.now());
+                    return;
+                  }
+                  setPauseTotal((total) => total + (Date.now() - pausedAt));
+                  setPausedAt(null);
+                  setNow(Date.now());
+                }}
+              />
+              <BlackButton label="EXIT" tone={buttonTone} onPress={() => setConfirmingExit(true)} />
+            </>
           )}
         </View>
       </View>
+      <ConfirmDialog
+        title="Exit this workout?"
+        visible={confirmingExit}
+        onNo={() => setConfirmingExit(false)}
+        onYes={() => router.back()}
+      />
     </SafeAreaView>
   );
 }
@@ -189,11 +212,13 @@ function SummaryLine({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DeleteConfirm({
+function ConfirmDialog({
+  title,
   visible,
   onYes,
   onNo,
 }: {
+  title: string;
   visible: boolean;
   onYes: () => void;
   onNo: () => void;
@@ -202,7 +227,7 @@ function DeleteConfirm({
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onNo}>
       <Pressable accessibilityLabel="Close" style={styles.backdrop} onPress={onNo}>
         <Pressable style={styles.card} onPress={() => undefined}>
-          <AppText style={styles.confirmTitle}>Delete this preset?</AppText>
+          <AppText style={styles.confirmTitle}>{title}</AppText>
           <BlackButton label="YES" onPress={onYes} />
           <BlackButton label="NO" onPress={onNo} />
         </Pressable>
@@ -278,6 +303,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flex: 1,
+    gap: 12,
     justifyContent: "flex-end",
     paddingBottom: 20,
     paddingHorizontal: 20,
