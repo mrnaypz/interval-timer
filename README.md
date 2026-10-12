@@ -7,7 +7,7 @@ An Android interval timer. Build a workout from sets, work, and rest, save it, a
 - **Home.** A black **NEW TIMER** button, then saved presets. A preset button reads like `45/15 - 15:00` (45 seconds work, 15 seconds rest, 15 minutes total). Press and hold a preset to delete it.
 - **New timer.** Set the count, work, and rest with minus and plus, or tap the number to type it. Work and rest use minutes.seconds (`00.45` is 45 seconds). Plus and minus move work and rest by 5 seconds. **TOTAL** is sets × (work + rest). **SAVE** returns to the home screen.
 - **Start.** A summary sits above **START**, for example `WORK - 00:45`, `REST - 00:15`, `TOTAL - 15:00`. **BACK** returns home. **DELETE** asks YES or NO, and YES removes the preset.
-- **Run.** **COUNTDOWN** and **REST** use a black screen with white text. **WORK** uses a white screen with black text. **EXIT** and **MENU** sit toward the bottom. Each timer chimes on its last four seconds. The last chime is higher, and when the workout ends that higher chime plays twice more, half a second apart.
+- **Run.** **COUNTDOWN** and **REST** use a black screen with white text. **WORK** uses a white screen with black text. The screen stays on, and the phone does not lock, until the timer finishes or you leave. **EXIT** and **MENU** sit toward the bottom. Each timer chimes on its last four seconds. The last chime is higher, and when the workout ends that higher chime plays twice more, half a second apart.
 
 The typeface is Fredoka Light.
 

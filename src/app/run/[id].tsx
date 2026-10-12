@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Modal, Pressable, StyleSheet, View } from "react-native";
@@ -34,6 +35,17 @@ export default function RunScreen() {
 
   const chimeEvents = useMemo(() => countdownChimes(phases), [phases]);
   const playedChimes = useRef(new Set<number>());
+  const workoutRunning = startedAt !== null && phaseAt(phases, now - startedAt).kind !== "done";
+
+  useEffect(() => {
+    if (!workoutRunning) {
+      return;
+    }
+    void activateKeepAwakeAsync("workout").catch(() => undefined);
+    return () => {
+      void deactivateKeepAwake("workout").catch(() => undefined);
+    };
+  }, [workoutRunning]);
 
   useEffect(() => {
     void prepareChimes();
