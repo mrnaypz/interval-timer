@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 34,
-    width: 128,
+    width: 140,
   },
   summaryDash: {
     fontSize: 34,
