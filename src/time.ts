@@ -8,6 +8,7 @@ export type PhaseKind = "countdown" | "work" | "rest";
 export type Phase = {
   kind: PhaseKind;
   durationMs: number;
+  setsLeft: number;
 };
 
 export function formatSets(sets: number): string {
@@ -93,14 +94,16 @@ export function stepTime(current: number, delta: number): number {
 }
 
 export function buildPhases(sets: number, workSec: number, restSec: number): Phase[] {
-  const phases: Phase[] = [{ kind: "countdown", durationMs: COUNTDOWN_MS }];
-  for (let index = 0; index < sets; index += 1) {
+  const safeSets = Math.max(0, sets);
+  const phases: Phase[] = [{ kind: "countdown", durationMs: COUNTDOWN_MS, setsLeft: safeSets }];
+  for (let index = 0; index < safeSets; index += 1) {
+    const setsLeft = safeSets - index;
     if (workSec > 0) {
-      phases.push({ kind: "work", durationMs: workSec * 1000 });
+      phases.push({ kind: "work", durationMs: workSec * 1000, setsLeft });
     }
-    const lastSet = index === sets - 1;
+    const lastSet = index === safeSets - 1;
     if (!lastSet && restSec > 0) {
-      phases.push({ kind: "rest", durationMs: restSec * 1000 });
+      phases.push({ kind: "rest", durationMs: restSec * 1000, setsLeft });
     }
   }
   return phases;
@@ -109,16 +112,16 @@ export function buildPhases(sets: number, workSec: number, restSec: number): Pha
 export function phaseAt(
   phases: Phase[],
   elapsedMs: number,
-): { kind: PhaseKind | "done"; remainingMs: number } {
+): { kind: PhaseKind | "done"; remainingMs: number; setsLeft: number } {
   let cursor = 0;
   for (const phase of phases) {
     const end = cursor + phase.durationMs;
     if (elapsedMs < end) {
-      return { kind: phase.kind, remainingMs: end - elapsedMs };
+      return { kind: phase.kind, remainingMs: end - elapsedMs, setsLeft: phase.setsLeft };
     }
     cursor = end;
   }
-  return { kind: "done", remainingMs: 0 };
+  return { kind: "done", remainingMs: 0, setsLeft: 0 };
 }
 
 export function displaySeconds(remainingMs: number): number {

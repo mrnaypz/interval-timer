@@ -67,6 +67,11 @@ describe("workout phases", () => {
     assert.equal(phaseAt(phases, 5000 + 45000).kind, "rest");
     assert.equal(phaseAt(phases, 5000 + 45000 + 15000).kind, "work");
     assert.equal(phaseAt(phases, 5000 + 45000 + 15000 + 45000).kind, "done");
+    assert.equal(phaseAt(phases, 0).setsLeft, 2);
+    assert.equal(phaseAt(phases, 5000).setsLeft, 2);
+    assert.equal(phaseAt(phases, 5000 + 45000).setsLeft, 2);
+    assert.equal(phaseAt(phases, 5000 + 45000 + 15000).setsLeft, 1);
+    assert.equal(phaseAt(phases, 5000 + 45000 + 15000 + 45000).setsLeft, 0);
   });
 
   it("chimes on the last four seconds, and ends the workout with two extra high chimes", () => {

@@ -15,6 +15,7 @@ import {
   countdownChimes,
   displaySeconds,
   formatClock,
+  formatSets,
   formatTotal,
   phaseAt,
   phaseLabel,
@@ -166,8 +167,14 @@ export default function RunScreen() {
       <View style={styles.stage}>
         <View style={styles.timerArea}>
           <View style={styles.timerGroup}>
-            <AppText style={[styles.phase, { color: ink }]}>{phaseLabel(phase.kind)}</AppText>
-            <AppText style={[styles.clock, { color: ink }]}>{formatClock(displaySeconds(phase.remainingMs))}</AppText>
+            <View style={styles.timerPair}>
+              <AppText style={[styles.phase, { color: ink }]}>SETS</AppText>
+              <AppText style={[styles.clock, { color: ink }]}>{formatSets(phase.setsLeft)}</AppText>
+            </View>
+            <View style={styles.timerPair}>
+              <AppText style={[styles.phase, { color: ink }]}>{phaseLabel(phase.kind)}</AppText>
+              <AppText style={[styles.clock, { color: ink }]}>{formatClock(displaySeconds(phase.remainingMs))}</AppText>
+            </View>
           </View>
         </View>
         <View style={styles.footer}>
@@ -304,8 +311,12 @@ const styles = StyleSheet.create({
   },
   timerGroup: {
     alignItems: "center",
-    gap: 36,
+    gap: 48,
     transform: [{ translateY: -56 }],
+  },
+  timerPair: {
+    alignItems: "center",
+    gap: 36,
   },
   phase: {
     fontSize: 42,
