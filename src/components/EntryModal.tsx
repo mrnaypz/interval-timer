@@ -10,7 +10,7 @@ type Props = {
   value: string;
   hint: string;
   error: string | null;
-  keyboard: "number-pad" | "decimal-pad";
+  keyboard: "number-pad" | "numbers-and-punctuation";
   onChange: (value: string) => void;
   onSubmit: () => void;
   onClose: () => void;

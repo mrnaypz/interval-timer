@@ -84,7 +84,7 @@ export default function NewTimerScreen() {
     }
     const parsed = parseDuration(draft);
     if (parsed === null) {
-      setEntryError("Use minutes.seconds, like 00.45.");
+      setEntryError("Use minutes:seconds, like 00:45.");
       return;
     }
     if (field === "work") {
@@ -153,8 +153,8 @@ export default function NewTimerScreen() {
       </ScrollView>
       <EntryModal
         error={entryError}
-        hint={field === "sets" ? "Whole number, 0 to 99." : "Minutes.seconds, like 00.45."}
-        keyboard={field === "sets" ? "number-pad" : "decimal-pad"}
+        hint={field === "sets" ? "Whole number, 0 to 99." : "Minutes:seconds, like 00:45."}
+        keyboard={field === "sets" ? "number-pad" : "numbers-and-punctuation"}
         title={field === "sets" ? "SETS" : field === "work" ? "WORK" : "REST"}
         value={draft}
         visible={field !== null}

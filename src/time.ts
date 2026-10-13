@@ -15,12 +15,12 @@ export function formatSets(sets: number): string {
   return String(Math.max(0, sets)).padStart(2, "0");
 }
 
-/** Editor display: minutes.seconds, for example 00.45 or 01.30. */
+/** Editor display: minutes:seconds, for example 00:45 or 01:30. */
 export function formatEditorTime(totalSec: number): string {
   const clamped = Math.max(0, Math.min(MAX_TIME_SEC, totalSec));
   const minutes = Math.floor(clamped / 60);
   const seconds = clamped % 60;
-  return `${String(minutes).padStart(2, "0")}.${String(seconds).padStart(2, "0")}`;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
 /** Workout length: 06:45, or 1:05:00 once it passes an hour. */
@@ -64,7 +64,7 @@ export function parseSets(input: string): number | null {
 }
 
 /**
- * Accepts minutes.seconds (00.45), minutes:seconds (1:30), or a whole number of seconds (45).
+ * Accepts minutes:seconds (00:45 or 1:30), the same time with a period, or a whole number of seconds (45).
  */
 export function parseDuration(input: string): number | null {
   const trimmed = input.trim();

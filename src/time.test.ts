@@ -19,9 +19,9 @@ describe("time formatting", () => {
   it("pads sets and editor times", () => {
     assert.equal(formatSets(0), "00");
     assert.equal(formatSets(15), "15");
-    assert.equal(formatEditorTime(0), "00.00");
-    assert.equal(formatEditorTime(45), "00.45");
-    assert.equal(formatEditorTime(90), "01.30");
+    assert.equal(formatEditorTime(0), "00:00");
+    assert.equal(formatEditorTime(45), "00:45");
+    assert.equal(formatEditorTime(90), "01:30");
   });
 
   it("formats the workout total the way preset buttons show it", () => {
@@ -38,7 +38,7 @@ describe("time formatting", () => {
     assert.equal(parseSets("15"), 15);
     assert.equal(parseSets("00"), 0);
     assert.equal(parseSets("100"), null);
-    assert.equal(parseDuration("00.45"), 45);
+    assert.equal(parseDuration("00:45"), 45);
     assert.equal(parseDuration("01.30"), 90);
     assert.equal(parseDuration("1:30"), 90);
     assert.equal(parseDuration("45"), 45);
