@@ -177,7 +177,7 @@ export default function RunScreen() {
             </View>
           </View>
         </View>
-        <View style={styles.footer}>
+        <View style={styles.runFooter}>
           {phase.kind === "done" ? (
             <BlackButton label="MENU" onPress={() => router.replace("/")} />
           ) : (
@@ -302,17 +302,12 @@ const styles = StyleSheet.create({
   },
   timerArea: {
     alignItems: "center",
-    bottom: 0,
+    flex: 1,
     justifyContent: "center",
-    left: 0,
-    position: "absolute",
-    right: 0,
-    top: 0,
   },
   timerGroup: {
     alignItems: "center",
     gap: 48,
-    transform: [{ translateY: -56 }],
   },
   timerPair: {
     alignItems: "center",
@@ -330,6 +325,11 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 12,
     justifyContent: "flex-end",
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  runFooter: {
+    gap: 12,
     paddingBottom: 20,
     paddingHorizontal: 20,
   },
